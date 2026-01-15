@@ -37,7 +37,23 @@ pub fn get_last_entry() -> String {
     }
 }
 
-fn read_lines<P>(filename: P) -> io::Result<io::Lines<io::BufReader<File>>>
+pub fn get_all_entires() -> Result<Vec<String>, String> {
+    let lines = read_lines(TASK_FILE_PATH)
+    .map_err(|e| format!("Can't read file: {}",e))?;
+
+    let mut out = Vec::new();
+
+    for line in lines {
+        match line {
+            Ok(l) => out.push(l),
+            Err(e) => return Err(format!("Error reading line: {e}")),
+        }
+    }
+
+    Ok(out)
+}
+
+pub fn read_lines<P>(filename: P) -> io::Result<io::Lines<io::BufReader<File>>>
 where P: AsRef<Path>, {
     let task_file = match OpenOptions::new()
         .read(true)

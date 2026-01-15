@@ -1,4 +1,4 @@
-use crate::futil::{append_to_file, get_last_entry};
+use crate::futil::{append_to_file, get_last_entry, get_all_entires};
 use crate::timeutil::{local_time, time_between};
 
 pub fn start(name:&str) {
@@ -46,4 +46,19 @@ pub fn stop() {
 
     let last_name = last_arr.first().unwrap();
     println!("Task {last_name} stopped at {diff}");
+}
+
+pub fn view_all() -> Result<(), String> {
+    let entries = get_all_entires()?;
+
+    if entries.is_empty() {
+        println!("No entries found");
+        return Ok(());
+    }
+
+    for line in entries {
+        println!("{}",line);
+    }
+
+    Ok(())
 }
