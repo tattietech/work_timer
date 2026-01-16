@@ -37,7 +37,7 @@ pub fn get_last_entry() -> String {
     }
 }
 
-pub fn get_all_entires() -> Result<Vec<String>, String> {
+pub fn get_all() -> Result<Vec<String>, String> {
     let lines = read_lines(TASK_FILE_PATH)
     .map_err(|e| format!("Can't read file: {}",e))?;
 

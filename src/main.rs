@@ -5,7 +5,7 @@ mod futil;
 mod tracker;
 mod timeutil;
 
-fn main() {
+fn main() -> Result<(), String> {
     let args : Vec<String> = env::args().collect();
 
     if args.len() < 2 {
@@ -16,17 +16,17 @@ fn main() {
     let mode = &args[1];
     let name = if args.len() >=3 {&args[2..].join(" ")} else {""};
 
-    fn view() {
-        view_all();
-    }
-
-    match &mode[..] {
+    let result = match &mode[..] {
         "start" => start(name),
         "stop" => stop(),
-        "view" => view(),
-        _ => {
-            println!("Useage: task <start|stop> <name>\n\n Mode must be 'start' or 'stop'");
-            std::process::exit(0);
-        }
+        "view" => view_all(),
+        _ => Err("Useage: task <start|stop> <name>\n\n Mode must be 'start' or 'stop'".to_string())
+    };
+
+    if let Err(err) = result {
+        eprintln!("Error: {}", err);
+        std::process::exit(0);
     }
+
+    Ok(())
 }
