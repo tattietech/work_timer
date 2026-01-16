@@ -6,7 +6,8 @@ pub fn start(name:&str) -> Result<(),String> {
         return Err("Please enter name of task.".to_string());
     }
 
-    let last_entry = get_last_entry();
+    let last_entry = get_last_entry()?;
+
     let last_char = last_entry
     .chars()
     .last()
@@ -21,13 +22,14 @@ pub fn start(name:&str) -> Result<(),String> {
     
     let local_time = local_time();       
     let line = format!("{name},{local_time}");
-    append_to_file(&line);
+    append_to_file(&line)?;
 
     Ok(())
 }
 
 pub fn stop() -> Result<(), String> {
-    let last_entry = get_last_entry();
+    let last_entry = get_last_entry()?;
+
     let last_arr: Vec<&str> = last_entry.split(',').collect();
 
     if last_arr.len() > 2 {
@@ -37,11 +39,11 @@ pub fn stop() -> Result<(), String> {
     let last_time = last_arr.last().unwrap();
     let local_time = local_time();
 
-    let diff = time_between(&last_time, &local_time).to_string();
+    let diff = time_between(&last_time, &local_time)?.to_string();
 
     let line = format!(",{local_time},{diff}\n");
 
-    append_to_file(&line);
+    append_to_file(&line)?;
 
     let last_name = last_arr.first().unwrap();
     println!("Task {last_name} stopped at {diff}");
@@ -49,7 +51,7 @@ pub fn stop() -> Result<(), String> {
     Ok(())
 }
 
-pub fn view_all() -> Result<(), String> {
+pub fn print_all() -> Result<(), String> {
     let entries = get_all()?;
 
     if entries.is_empty() {
@@ -60,6 +62,14 @@ pub fn view_all() -> Result<(), String> {
     for line in entries {
         println!("{}",line);
     }
+
+    Ok(())
+}
+
+pub fn print_last() -> Result<(), String> {
+    let last = get_last_entry()?;
+
+    println!("{last}");
 
     Ok(())
 }

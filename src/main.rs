@@ -1,5 +1,5 @@
 use std::env;
-use crate::tracker::{start, stop, view_all};
+use crate::{tracker::{start, stop, print_all, print_last}};
 
 mod futil;
 mod tracker;
@@ -19,7 +19,8 @@ fn main() -> Result<(), String> {
     let result = match &mode[..] {
         "start" => start(name),
         "stop" => stop(),
-        "view" => view_all(),
+        "all" => print_all(),
+        "last" => print_last(),
         _ => Err("Useage: task <start|stop> <name>\n\n Mode must be 'start' or 'stop'".to_string())
     };
 
