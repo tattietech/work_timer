@@ -6,6 +6,7 @@ mod futil;
 mod tracker;
 mod timeutil;
 mod cli;
+mod entry;
 
 fn main() -> Result<(), String> {
     let cli = Cli::parse();

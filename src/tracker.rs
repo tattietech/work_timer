@@ -1,5 +1,8 @@
+use chrono::Local;
+
 use crate::futil::{append_to_file, get_last_entry, get_all};
 use crate::timeutil::{local_time, time_between};
+use crate::entry::Entry;
 
 pub fn start(name:&str) -> Result<(),String> {
     if name.len() == 0 {
@@ -18,10 +21,16 @@ pub fn start(name:&str) -> Result<(),String> {
         return Err("An entry is still open, please run task stop to stop it.".to_string());
     }
 
+    let entry = Entry {
+        start_time: Local::now(),
+        end_time: None,
+        name: name.to_string(),
+        active: true
+    };
+
     println!("Starting task: {name}");
-    
-    let local_time = local_time();       
-    let line = format!("{name},{local_time}");
+      
+    let line = format!("{name},{}", local_time());
     append_to_file(&line)?;
 
     Ok(())
