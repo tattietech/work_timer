@@ -1,13 +1,14 @@
 use std::fs::File;
-use std::io::{self, BufRead, Write};
+use std::io::{self, BufReader, BufRead, Write};
 use std::path::Path;
 use std::fs::OpenOptions;
+use crate::entry::Entry;
 
-const TASK_FILE_PATH: &str = "tasks.csv";
+const TASK_FILE_PATH: &str = "tasks.json";
 
-pub fn append_to_file(value:&str) -> Result<(), String> {
+pub fn write_file(value:&str) -> Result<(), String> {
     let mut task_file = match OpenOptions::new()
-        .append(true)
+        .write(true)
         .create(true)
         .open(TASK_FILE_PATH)
         {
@@ -35,20 +36,20 @@ pub fn get_last_entry() -> Result<String,String> {
     }
 }
 
-pub fn get_all() -> Result<Vec<String>, String> {
-    let lines = read_lines(TASK_FILE_PATH)
-    .map_err(|e| format!("Can't read file: {}",e))?;
+pub fn get_all_entries() -> Result<Vec<Entry>, String> {
+    let file = match File::open(TASK_FILE_PATH) {
+        Ok(f) => f,
+        Err(e) => return Err(e.to_string())
+    };
 
-    let mut out = Vec::new();
+    let reader = BufReader::new(file);
 
-    for line in lines {
-        match line {
-            Ok(l) => out.push(l),
-            Err(e) => return Err(format!("Error reading line: {e}")),
-        }
-    }
+    let entries = match serde_json::from_reader(reader) {
+        Ok(e) => e,
+        Err(e) => return Err(e.to_string())
+    };
 
-    Ok(out)
+    Ok(entries)
 }
 
 pub fn read_lines<P>(filename: P) -> io::Result<io::Lines<io::BufReader<File>>>

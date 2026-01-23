@@ -1,76 +1,69 @@
 use chrono::Local;
-
-use crate::futil::{append_to_file, get_last_entry, get_all};
-use crate::timeutil::{local_time, time_between};
+use tabled::{Table};
+use crate::futil::{get_last_entry, get_all_entries, write_file};
 use crate::entry::Entry;
+use serde_json;
 
 pub fn start(name:&str) -> Result<(),String> {
     if name.len() == 0 {
         return Err("Please enter name of task.".to_string());
     }
 
-    let last_entry = get_last_entry()?;
+    let mut entries : Vec<Entry> = get_all_entries()?;
 
-    let last_char = last_entry
-    .chars()
-    .last()
-    .unwrap_or(' ');
+    if entries.len() > 0 {
+        let last_entry = entries.last().unwrap();
 
-    // if the file is not empty and the last entry is still open
-    if last_entry != "" && last_char == ',' {
-        return Err("An entry is still open, please run task stop to stop it.".to_string());
+        if last_entry.active {
+            return Err("An entry is still open, please run task stop to stop it.".to_string());   
+        }
     }
 
     let entry = Entry {
         start_time: Local::now(),
-        end_time: None,
+        end_time: Local::now(),
         name: name.to_string(),
-        active: true
+        active: true,
+        duration: "0".to_string()
     };
 
-    println!("Starting task: {name}");
-      
-    let line = format!("{name},{}", local_time());
-    append_to_file(&line)?;
+    entries.push(entry);
+
+    let ser_entries = serde_json::to_string(&entries).unwrap();
+
+    write_file(&ser_entries)?;
 
     Ok(())
 }
 
 pub fn stop() -> Result<(), String> {
-    let last_entry = get_last_entry()?;
+    let mut entries : Vec<Entry> = get_all_entries()?;
 
-    let last_arr: Vec<&str> = last_entry.split(',').collect();
+    if let Some(last) = entries.last_mut() {
+        if !last.active {
+                return Err("No task is running".to_string());
+            }
 
-    if last_arr.len() > 2 {
-        return Err("No task is running".to_string());
+        last.end_time = Local::now();
+        last.set_duration();
+        last.active = false;
+
+        let ser_entries = serde_json::to_string(&entries).unwrap();
+        write_file(&ser_entries)?;
     }
-
-    let last_time = last_arr.last().unwrap();
-    let local_time = local_time();
-
-    let diff = time_between(&last_time, &local_time)?.to_string();
-
-    let line = format!(",{local_time},{diff}\n");
-
-    append_to_file(&line)?;
-
-    let last_name = last_arr.first().unwrap();
-    println!("Task {last_name} stopped at {diff}");
+    else {
+        return Err("Problem opening file.".to_string());
+    }
 
     Ok(())
 }
 
-pub fn print_all() -> Result<(), String> {
-    let entries = get_all()?;
+pub fn view_all() -> Result<(), String> {
+    let entries = get_all_entries().unwrap();
 
-    if entries.is_empty() {
-        println!("No entries found");
-        return Ok(());
-    }
+    let table = Table::new(entries);
 
-    for line in entries {
-        println!("{}",line);
-    }
+    println!("{}", table);
 
     Ok(())
 }
