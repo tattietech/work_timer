@@ -37,15 +37,21 @@ pub fn get_last_entry() -> Result<String,String> {
 }
 
 pub fn get_all_entries() -> Result<Vec<Entry>, String> {
-    let file = match File::open(TASK_FILE_PATH) {
-        Ok(f) => f,
-        Err(e) => return Err(e.to_string())
-    };
+    let file = match OpenOptions::new()
+        .write(true)
+        .create(true)
+        .read(true)
+        .open(TASK_FILE_PATH)
+        {
+            Ok(f) => f,
+            Err(e) => return Err(e.to_string())
+        };
 
     let reader = BufReader::new(file);
 
     let entries = match serde_json::from_reader(reader) {
         Ok(e) => e,
+        Err(e) if e.is_eof() => Vec::new(),
         Err(e) => return Err(e.to_string())
     };
 

@@ -58,7 +58,7 @@ pub fn stop() -> Result<(), String> {
     Ok(())
 }
 
-pub fn view_all() -> Result<(), String> {
+pub fn print_all() -> Result<(), String> {
     let entries = get_all_entries().unwrap();
 
     let table = Table::new(entries);

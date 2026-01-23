@@ -1,6 +1,6 @@
 use clap::Parser;
 
-use crate::{cli::{Cli, Commands}, tracker::{start, stop, print_last, view_all}};
+use crate::{cli::{Cli, Commands}, tracker::{start, stop, print_last, print_all}};
 
 mod futil;
 mod tracker;
@@ -12,7 +12,7 @@ fn main() -> Result<(), String> {
     match cli.command {
         Commands::Start {name} => start(&name)?,
         Commands::Stop => stop()?,
-        Commands::All => view_all()?,
+        Commands::All => print_all()?,
         Commands::Last => print_last()?
     };
 
