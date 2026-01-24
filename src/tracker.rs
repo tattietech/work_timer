@@ -20,8 +20,8 @@ pub fn start(name:&str) -> Result<(),String> {
     }
 
     let entry = Entry {
-        start_time: Local::now(),
-        end_time: Local::now(),
+        start_time: Local::now().naive_local(),
+        end_time: Local::now().naive_local(),
         name: name.to_string(),
         active: true,
         duration: "0".to_string()
@@ -44,7 +44,7 @@ pub fn stop() -> Result<(), String> {
                 return Err("No task is running".to_string());
             }
 
-        last.end_time = Local::now();
+        last.end_time = Local::now().naive_local();
         last.set_duration();
         last.active = false;
 
