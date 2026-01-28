@@ -4,12 +4,13 @@ use tabled::{Tabled};
 
 #[derive(Serialize, Deserialize, Debug, Tabled)]
 pub struct Entry {
+    pub name: String,
+    
     #[serde(with = "my_date_format")]
     pub start_time: NaiveDateTime,
 
     #[serde(with = "my_date_format")]
     pub end_time: NaiveDateTime,
-    pub name: String,
     pub active: bool,
     pub duration: String
 }
