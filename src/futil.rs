@@ -22,13 +22,14 @@ pub fn write_file(value:&str) -> Result<(), String> {
     Ok(())
 }
 
-pub fn get_last_entry() -> Result<String,String> {
+pub fn get_last_entry() -> Result<Vec<Entry>,String> {
     if let Ok(lines) = read_lines(TASK_FILE_PATH) {
         if let Some(last) = lines.map_while(Result::ok).last() {
-            Ok(last)
+            let entry : Vec<Entry> = serde_json::from_str(&last).unwrap();
+            Ok(entry)
         }
         else {
-            Ok(String::new())
+            Ok(vec![])
         }
     }
     else {

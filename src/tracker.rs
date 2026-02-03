@@ -59,7 +59,7 @@ pub fn stop() -> Result<(), String> {
 }
 
 pub fn print_all() -> Result<(), String> {
-    let entries = get_all_entries().unwrap();
+    let entries = get_all_entries()?;
 
     let table = Table::new(entries);
 
@@ -71,7 +71,9 @@ pub fn print_all() -> Result<(), String> {
 pub fn print_last() -> Result<(), String> {
     let last = get_last_entry()?;
 
-    println!("{last}");
+    let table = Table::new(last);
+
+    println!("{}", table);
 
     Ok(())
 }
