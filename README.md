@@ -1,6 +1,6 @@
 # Task Time Keeper
 
-A simple command-line task time tracking tool written in Rust. This application helps you track how much time you spend on different tasks throughout your day.
+A simple command-line task time tracking tool written in Rust. This application helps you track how much time you spend on different tasks throughout your day. Helpful for freelancing work or filling in timesheets.
 
 ## Features
 
